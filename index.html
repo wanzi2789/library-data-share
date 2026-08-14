@@ -205,8 +205,8 @@ function render(){
       '<div class="summary-card purple"><div class="s-label">借书合计</div><div class="s-value">'+f(rs5)+'</div><div class="s-sub">日均 '+f(Math.round(rs5/days))+'</div></div>'+
       '<div class="summary-card"><div class="s-label">还书合计</div><div class="s-value">'+f(rs6)+'</div><div class="s-sub">日均 '+f(Math.round(rs6/days))+'</div></div>'+
       '<div class="summary-card orange"><div class="s-label">新增粉丝合计</div><div class="s-value">'+f(rs7)+'</div><div class="s-sub">区间内累计</div></div>'+
-      '<div class="summary-card purple"><div class="s-label">期末累计客流</div><div class="s-value">'+f(r1.cumulativeTotal)+'</div><div class="s-sub">2026年累计 '+f(r1.ytdTotal)+'</div></div>'+
-      '<div class="summary-card green"><div class="s-label">期末累计借书</div><div class="s-value">'+f(r1.borrowCumulative)+'</div><div class="s-sub">累计还书 '+f(r1.returnCumulative)+'</div></div>';
+      '<div class="summary-card purple"><div class="s-label">开馆累计客流</div><div class="s-value">'+f(r1.cumulativeTotal)+'</div><div class="s-sub">2026年累计 '+f(r1.ytdTotal)+'</div></div>'+
+      '<div class="summary-card green"><div class="s-label">开馆累计借书</div><div class="s-value">'+f(r1.borrowCumulative)+'</div><div class="s-sub">累计还书 '+f(r1.returnCumulative)+'</div></div>';
   }
   for(var j=0;j<cur.length;j++){
     (function(d){
