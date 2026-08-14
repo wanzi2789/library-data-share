@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合肥市中心图书馆 · 历史数据分享</title>
+<style>
+:root{--primary:#3b82f6;--primary-dark:#1e40af;--bg:#f0f4f8;--card:#fff;--text:#1e293b;--text2:#64748b;--text3:#94a3b8;--border:#e2e8f0;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+.app{max-width:1200px;margin:0 auto;padding:12px}
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:var(--radius);padding:18px 20px;margin-bottom:12px;box-shadow:0 8px 30px rgba(37,99,235,.25)}
+.header h1{font-size:18px;font-weight:700}
+.header .sub{margin-top:6px;font-size:12px;opacity:.85}
+.badge{display:inline-block;font-size:11px;background:rgba(255,255,255,.18);padding:2px 10px;border-radius:6px;margin-right:8px;font-weight:600}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);padding:10px 12px;border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
+.toolbar label{font-size:12px;font-weight:600;color:var(--text2)}
+.toolbar input{padding:6px 10px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:13px;min-width:0}
+.toolbar .sp{flex:1}
+.btn{padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;background:#f1f5f9;color:var(--text)}
+.btn:hover{background:#e2e8f0}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.summary-card{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:10px;padding:10px 14px;border-left:4px solid var(--primary)}
+.summary-card.green{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-left-color:#10b981}
+.summary-card.orange{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-left-color:#f59e0b}
+.summary-card.purple{background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-left-color:#8b5cf6}
+.s-label{font-size:11px;color:var(--text2);font-weight:600}
+.s-value{font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.s-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;border:1px solid var(--border)}
+.card-title{font-size:14px;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #f1f5f9}
+.table-wrap{overflow:auto;border-radius:8px;border:1px solid var(--border);max-height:560px;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{background:#f8fafc;position:sticky;top:0;z-index:1}
+th{padding:7px 9px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:center}
+td{padding:6px 9px;border-bottom:1px solid #f1f5f9;white-space:nowrap;text-align:center}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#f8faff}
+tbody tr:active{background:#eff6ff}
+.num{font-variant-numeric:tabular-nums;font-weight:600}
+.report{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;line-height:1.9;white-space:pre-wrap;max-height:300px;overflow:auto}
+.foot{text-align:center;font-size:11px;color:var(--text3);margin:12px 0}
+/* 手机卡片列表 */
+.mlist{display:none}
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.04);cursor:pointer;transition:background .15s}
+.mcard:active{background:#f0f6ff}
+.mcard .top{display:flex;align-items:center;justify-content:space-between}
+.mcard .date{font-size:15px;font-weight:700}
+.mcard .wk{font-size:11px;color:var(--text3);font-weight:600;margin-left:6px}
+.mcard .closed{display:inline-block;font-size:10px;color:#ef4444;background:#fef2f2;padding:1px 6px;border-radius:4px;margin-left:6px}
+.mcard .grids{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.mcard .g{background:#f8fafc;border-radius:6px;padding:6px}
+.mcard .g b{font-size:13px;font-variant-numeric:tabular-nums;display:block}
+.mcard .g span{font-size:10px;color:var(--text3)}
+.mcard .more{margin-top:8px;font-size:11px;color:var(--primary);text-align:center}
+/* 详情弹层 */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex}
+.sheet{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:720px;max-height:82vh;overflow:auto;padding:16px 18px 24px;animation:up .2s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet .bar{width:36px;height:4px;border-radius:2px;background:#e2e8f0;margin:0 auto 12px}
+.sheet h3{font-size:15px;margin-bottom:10px}
+.sheet .kv{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.sheet .kv div{background:#f8fafc;border-radius:7px;padding:7px 10px}
+.sheet .kv b{display:block;font-size:12px;font-variant-numeric:tabular-nums}
+.sheet .kv span{font-size:10px;color:var(--text3)}
+.sheet .close{width:100%;margin-top:12px;padding:10px;border:none;border-radius:9px;background:#1e40af;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.sheet .rep{margin-top:10px;font-size:12px;line-height:1.8;white-space:pre-wrap;background:#f9fafb;border-radius:8px;padding:10px;color:#334155}
+@media (max-width:768px){
+  .app{padding:8px}
+  .header h1{font-size:16px}
+  table,.table-wrap{display:none}
+  .mlist{display:block}
+  .summary-grid{grid-template-columns:repeat(2,1fr)}
+  .toolbar input[type=date]{flex:1;min-width:0}
+}
+@media print{.toolbar,.foot,.mlist{display:none}body{background:#fff}table,.table-wrap{display:block}.overlay{display:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>合肥市中心图书馆 · 历史数据分享</h1>
+    <div class="sub"><span class="badge">只读</span><span>数据更新至 2026-08-14 09:18 · 点击记录查看详情与播报</span></div>
+  </div>
+  <div class="toolbar">
+    <label>起始</label><input type="date" id="fStart">
+    <label>结束</label><input type="date" id="fEnd">
+    <input type="text" id="fSearch" placeholder="搜索日期…" style="width:110px">
+    <div class="sp"></div>
+    <button class="btn" onclick="window.print()">打印</button>
+  </div>
+  <div class="summary-grid" id="sumGrid"></div>
+  <div class="card" id="rangeCard">
+    <div class="card-title">区间累计汇总（<span id="rRange">全部数据</span>）</div>
+    <div class="summary-grid" id="rangeGrid"></div>
+  </div>
+  <div class="card" style="display:none" id="repCard">
+    <div class="card-title">当日播报文案</div>
+    <div class="report" id="repText"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">历史数据明细（共 <span id="cnt">0</span> 条）</div>
+    <div class="table-wrap"><table id="tb"><thead><tr>
+      <th>日期</th><th>星期</th><th>开馆天数</th><th>总客流</th><th>进馆客流</th><th>商业客流</th><th>办证</th><th>借书</th><th>还书</th><th>累计借书</th><th>累计还书</th><th>2026累计客流</th><th>开馆累计客流</th>
+    </tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="mlist" id="mlist"></div>
+  </div>
+  <div class="foot">本文件为只读分享版 · 数据来源于合肥市中心图书馆数据台</div>
+</div>
+
+<div class="overlay" id="overlay"><div class="sheet">
+  <div class="bar"></div>
+  <h3 id="shTitle"></h3>
+  <div class="kv" id="shKv"></div>
+  <div class="rep" id="shRep"></div>
+  <button class="close" onclick="closeSheet()">关闭</button>
+</div></div>
+
+<script>
+var ALL=[{"date":"2026-07-29","dayNumber":185,"floor1":0,"floor2":3664,"floor3":5697,"hours24":1514,"visitorTotal":10875,"kawangka":1690,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":1690,"dailyGrandTotal":12565,"cumulativeTotal":3739874,"ytdTotal":1679864,"cardDaily":731,"cardCumulative":380828,"borrowDaily":3496,"borrowCumulative":1750252,"returnDaily":3403,"returnCumulative":1635824,"xhsGood":1,"xhsBad":0,"xhsScore":4.8,"dyGood":4,"dyBad":0,"dyScore":4.9,"totalFans":408490,"newFans":855,"newViews":6462},{"date":"2026-07-30","dayNumber":186,"floor1":0,"floor2":3787,"floor3":5568,"hours24":1599,"visitorTotal":10954,"kawangka":2150,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":2150,"dailyGrandTotal":13104,"cumulativeTotal":3752978,"ytdTotal":1692968,"cardDaily":638,"cardCumulative":381466,"borrowDaily":3455,"borrowCumulative":1753707,"returnDaily":3272,"returnCumulative":1639096,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":1,"dyBad":0,"dyScore":4.9,"totalFans":409208,"newFans":759,"newViews":10748},{"date":"2026-07-31","dayNumber":187,"floor1":0,"floor2":3482,"floor3":5392,"hours24":1375,"visitorTotal":10249,"kawangka":1950,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":1950,"dailyGrandTotal":12199,"cumulativeTotal":3765177,"ytdTotal":1705167,"cardDaily":629,"cardCumulative":382095,"borrowDaily":3096,"borrowCumulative":1756803,"returnDaily":2859,"returnCumulative":1641955,"xhsGood":1,"xhsBad":0,"xhsScore":4.8,"dyGood":1,"dyBad":0,"dyScore":4.9,"totalFans":409876,"newFans":786,"newViews":12854},{"date":"2026-08-01","dayNumber":188,"floor1":0,"floor2":5759,"floor3":6609,"hours24":1510,"visitorTotal":13878,"kawangka":1100,"kenyue":150,"kenlv":150,"kfc":800,"commercialTotal":2200,"dailyGrandTotal":16078,"cumulativeTotal":3781255,"ytdTotal":1721245,"cardDaily":1157,"cardCumulative":383252,"borrowDaily":5540,"borrowCumulative":1762343,"returnDaily":5172,"returnCumulative":1647127,"xhsGood":1,"xhsBad":0,"xhsScore":4,"dyGood":1,"dyBad":0,"dyScore":4,"totalFans":411149,"newFans":1319,"newViews":411149},{"date":"2026-08-02","dayNumber":189,"floor1":0,"floor2":6794,"floor3":7699,"hours24":1453,"visitorTotal":15946,"kawangka":900,"kenyue":180,"kenlv":150,"kfc":800,"commercialTotal":2030,"dailyGrandTotal":17976,"cumulativeTotal":3799231,"ytdTotal":1739221,"cardDaily":1443,"cardCumulative":384695,"borrowDaily":6887,"borrowCumulative":1769230,"returnDaily":6553,"returnCumulative":1653680,"xhsGood":2,"xhsBad":0,"xhsScore":0,"dyGood":1,"dyBad":0,"dyScore":0,"totalFans":412574,"newFans":412574,"newViews":412574},{"date":"2026-08-03","dayNumber":0,"floor2":60,"floor3":153,"hours24":1541,"visitorTotal":1754,"kawangka":0,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":0,"dailyGrandTotal":1754,"cumulativeTotal":3800985,"ytdTotal":1740975,"cardDaily":0,"cardCumulative":384695,"borrowDaily":0,"borrowCumulative":1769230,"returnDaily":0,"returnCumulative":1653680,"xhsGood":0,"xhsBad":0,"xhsScore":0,"dyGood":0,"dyBad":0,"dyScore":0,"totalFans":0,"newFans":0,"newViews":0},{"date":"2026-08-04","dayNumber":190,"floor2":4425,"floor3":6077,"hours24":1495,"visitorTotal":11997,"kawangka":900,"kenyue":180,"kenlv":150,"kfc":800,"commercialTotal":2030,"dailyGrandTotal":14027,"cumulativeTotal":3815012,"ytdTotal":1755002,"cardDaily":665,"cardCumulative":385360,"borrowDaily":3977,"borrowCumulative":1773207,"returnDaily":4099,"returnCumulative":1657779,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":4,"dyBad":0,"dyScore":4.9,"totalFans":413764,"newFans":413764,"newViews":413764},{"date":"2026-08-05","dayNumber":191,"floor2":3920,"floor3":5545,"hours24":1484,"visitorTotal":10949,"kawangka":1620,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":1620,"dailyGrandTotal":12569,"cumulativeTotal":3827581,"ytdTotal":1767571,"cardDaily":583,"cardCumulative":385943,"borrowDaily":3361,"borrowCumulative":1776568,"returnDaily":3447,"returnCumulative":1661226,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":8,"dyBad":0,"dyScore":4.9,"totalFans":414392,"newFans":710,"newViews":4125},{"date":"2026-08-06","dayNumber":192,"floor2":3897,"floor3":5786,"hours24":1564,"visitorTotal":11247,"kawangka":2210,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":2210,"dailyGrandTotal":13457,"cumulativeTotal":3841038,"ytdTotal":1781028,"cardDaily":669,"cardCumulative":386780,"borrowDaily":3186,"borrowCumulative":1779757,"returnDaily":3329,"returnCumulative":1664995,"xhsGood":1,"xhsBad":0,"xhsScore":4.8,"dyGood":2,"dyBad":0,"dyScore":4.9,"totalFans":415406,"newFans":1071,"newViews":58563},{"date":"2026-08-07","dayNumber":193,"floor2":3561,"floor3":5221,"hours24":1439,"visitorTotal":10221,"kawangka":1500,"kenyue":200,"kenlv":200,"kfc":700,"commercialTotal":2600,"dailyGrandTotal":12821,"cumulativeTotal":3853859,"ytdTotal":1793849,"cardDaily":603,"cardCumulative":387383,"borrowDaily":2787,"borrowCumulative":1782544,"returnDaily":2737,"returnCumulative":1667732,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":6,"dyBad":0,"dyScore":4.9,"totalFans":416271,"newFans":820,"newViews":31364},{"date":"2026-08-08","dayNumber":194,"floor2":5978,"floor3":6512,"hours24":1575,"visitorTotal":14065,"kawangka":1000,"kenyue":180,"kenlv":150,"kfc":700,"commercialTotal":2030,"dailyGrandTotal":16095,"cumulativeTotal":3869954,"ytdTotal":1809944,"cardDaily":1152,"cardCumulative":388535,"borrowDaily":5891,"borrowCumulative":1788435,"returnDaily":5615,"returnCumulative":1673347,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":1,"dyBad":0,"dyScore":4.9,"totalFans":417544,"newFans":1431,"newViews":29176},{"date":"2026-08-09","dayNumber":195,"floor1":124,"floor2":5941,"floor3":7054,"hours24":1336,"visitorTotal":14455,"kawangka":600,"kenyue":150,"kenlv":150,"kfc":800,"commercialTotal":1700,"dailyGrandTotal":16155,"cumulativeTotal":3886109,"ytdTotal":1826099,"cardDaily":1277,"cardCumulative":389812,"borrowDaily":6905,"borrowCumulative":1795340,"returnDaily":6639,"returnCumulative":1679986,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":3,"dyBad":0,"dyScore":4.9,"totalFans":418863,"newFans":1448,"newViews":18722},{"date":"2026-08-10","dayNumber":0,"floor1":44,"floor2":30,"floor3":156,"hours24":1226,"visitorTotal":1456,"kawangka":0,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":0,"dailyGrandTotal":1456,"cumulativeTotal":3887565,"ytdTotal":1827555,"cardDaily":124,"cardCumulative":389936,"borrowDaily":0,"borrowCumulative":1795340,"returnDaily":246,"returnCumulative":1680232,"xhsGood":0,"xhsBad":0,"xhsScore":0,"dyGood":0,"dyBad":0,"dyScore":0,"totalFans":0,"newFans":0,"newViews":0},{"date":"2026-08-11","dayNumber":0,"floor1":69,"floor2":27,"floor3":136,"hours24":1403,"visitorTotal":1635,"kawangka":0,"kenyue":0,"kenlv":0,"kfc":0,"commercialTotal":0,"dailyGrandTotal":1635,"cumulativeTotal":3889200,"ytdTotal":1829190,"cardDaily":175,"cardCumulative":390111,"borrowDaily":11,"borrowCumulative":1795351,"returnDaily":831,"returnCumulative":1681063,"xhsGood":0,"xhsBad":0,"xhsScore":0,"dyGood":0,"dyBad":0,"dyScore":0,"totalFans":0,"newFans":0,"newViews":0},{"date":"2026-08-12","dayNumber":196,"floor1":134,"floor2":3931,"floor3":5728,"hours24":1487,"visitorTotal":11280,"kawangka":800,"kenyue":150,"kenlv":150,"kfc":700,"commercialTotal":1800,"dailyGrandTotal":13080,"cumulativeTotal":3902280,"ytdTotal":1842270,"cardDaily":705,"cardCumulative":390816,"borrowDaily":4246,"borrowCumulative":1799597,"returnDaily":4408,"returnCumulative":1685471,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":1,"dyBad":0,"dyScore":4.9,"totalFans":420096,"newFans":848,"newViews":13483},{"date":"2026-08-13","dayNumber":197,"floor1":112,"floor2":3436,"floor3":5292,"hours24":1347,"visitorTotal":10187,"kawangka":600,"kenyue":140,"kenlv":180,"kfc":800,"commercialTotal":1720,"dailyGrandTotal":11907,"cumulativeTotal":3914187,"ytdTotal":1854177,"cardDaily":556,"cardCumulative":391372,"borrowDaily":3476,"borrowCumulative":1803073,"returnDaily":3478,"returnCumulative":1688949,"xhsGood":0,"xhsBad":0,"xhsScore":4.8,"dyGood":1,"dyBad":0,"dyScore":4.9,"totalFans":420634,"newFans":626,"newViews":13350}];
+var WK=['周日','周一','周二','周三','周四','周五','周六'];
+var cur=[];
+function $(i){return document.getElementById(i)}
+function wd(s){var d=new Date(s+'T00:00:00+08:00');return isNaN(d)?'':WK[d.getDay()]}
+function f(n){return (n==null||isNaN(n)?0:n).toLocaleString()}
+function repText(d){
+  var p=d.date.split('-'),m=parseInt(p[1]),day=parseInt(p[2]),dn=d.dayNumber||0;
+  var r='一、运营数据\n';
+  r+='1.今日客流 '+(d.dailyGrandTotal||0)+' 人：进馆客流 '+(d.visitorTotal||0)+'（其中二楼 '+(d.floor2||0)+' 人，三楼 '+(d.floor3||0)+' 人，一楼/24小时 '+((d.floor1||0)+(d.hours24||0))+' 人）；商业客流 '+(d.commercialTotal||0)+' 人；\n';
+  r+='2.借阅证办理：'+(d.cardDaily||0)+' 个；\n';
+  r+='3.借还书：借阅 '+(d.borrowDaily||0)+' 本，归还 '+(d.returnDaily||0)+' 本；\n\n';
+  r+='二、媒体及舆情数据\n';
+  r+='1.今日馆方账号粉丝增加：'+(d.newFans||0)+' 人；\n';
+  r+='2.今日馆方账号浏览量增加：'+(d.newViews||0)+' 次；\n';
+  r+='3.小红书官方号监测：新增 '+(d.xhsGood||0)+' 条好评'+((d.xhsBad||0)>0?'，'+(d.xhsBad||0)+' 条差评':'')+'，评分 '+(d.xhsScore||0)+' 分；\n';
+  r+='4.抖音官方号监测：新增 '+(d.dyGood||0)+' 条好评'+((d.dyBad||0)>0?'，'+(d.dyBad||0)+' 条差评':'')+'，评分 '+(d.dyScore||0)+' 分；\n\n';
+  r+='三、累计数据（开馆至今）\n';
+  r+='1.累计总客流 '+(d.cumulativeTotal||0)+' 人次，2026年当年累计客流 '+(d.ytdTotal||0)+' 人次；\n';
+  r+='2.累计借阅证办理 '+(d.cardCumulative||0)+' 个；\n';
+  r+='3.累计借还书：借出 '+(d.borrowCumulative||0)+' 本，还回 '+(d.returnCumulative||0)+' 本；\n';
+  r+='4.馆方账号累计粉丝量 '+(d.totalFans||0)+' 人。';
+  return r;
+}
+function showDetail(d){
+  $('shTitle').textContent=d.date+'（'+wd(d.date)+' · 第'+(d.dayNumber||'?')+'天）';
+  $('shKv').innerHTML=
+    '<div><b>'+f(d.dailyGrandTotal)+'</b><span>当日总客流</span></div>'+
+    '<div><b>'+f(d.visitorTotal)+'</b><span>进馆客流（二楼 '+f(d.floor2)+' / 三楼 '+f(d.floor3)+' / 一楼+24h '+f((d.floor1||0)+(d.hours24||0))+'）</span></div>'+
+    '<div><b>'+f(d.commercialTotal)+'</b><span>商业客流</span></div>'+
+    '<div><b>'+f(d.cardDaily)+'</b><span>当日办证</span></div>'+
+    '<div><b>'+f(d.borrowDaily)+'</b><span>当日借书</span></div>'+
+    '<div><b>'+f(d.returnDaily)+'</b><span>当日还书</span></div>'+
+    '<div><b>'+f(d.borrowCumulative)+'</b><span>累计借书</span></div>'+
+    '<div><b>'+f(d.returnCumulative)+'</b><span>累计还书</span></div>'+
+    '<div><b>'+f(d.ytdTotal)+'</b><span>2026累计客流</span></div>'+
+    '<div><b>'+f(d.cumulativeTotal)+'</b><span>开馆累计客流</span></div>'+
+    '<div><b>'+f(d.cardCumulative)+'</b><span>累计办证</span></div>'+
+    '<div><b>'+f(d.totalFans)+'</b><span>累计粉丝</span></div>';
+  $('shRep').textContent=repText(d);
+  $('overlay').classList.add('show');
+}
+function closeSheet(){$('overlay').classList.remove('show')}
+$('overlay').addEventListener('click',function(e){if(e.target===$('overlay'))closeSheet()});
+function render(){
+  var s=$('fStart').value,e=$('fEnd').value,q=$('fSearch').value.trim();
+  cur=ALL.filter(function(x){
+    if(s&&x.date<s)return false;
+    if(e&&x.date>e)return false;
+    if(q&&x.date.indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){return b.date.localeCompare(a.date)});
+  $('cnt').textContent=cur.length;
+  var tb=$('tbody');tb.innerHTML='';
+  var ml=$('mlist');ml.innerHTML='';
+  $('repCard').style.display='none';
+  if(!cur.length){$('sumGrid').innerHTML='';$('rangeGrid').innerHTML='';$('rRange').textContent='无数据';return}
+  var d0=cur[0];
+  var tv=0,tg=0,tb2=0,tr2=0,tc=0;
+  for(var i=0;i<cur.length;i++){tv+=cur[i].visitorTotal||0;tg+=cur[i].dailyGrandTotal||0;tb2+=cur[i].borrowDaily||0;tr2+=cur[i].returnDaily||0;tc+=cur[i].cardDaily||0}
+  $('sumGrid').innerHTML=
+    '<div class="summary-card"><div class="s-label">最新日期</div><div class="s-value" style="font-size:14px">'+d0.date+'</div><div class="s-sub">'+wd(d0.date)+' · 第'+(d0.dayNumber||'?')+'天</div></div>'+
+    '<div class="summary-card green"><div class="s-label">当日总客流</div><div class="s-value">'+f(d0.dailyGrandTotal)+'</div><div class="s-sub">进馆 '+f(d0.visitorTotal)+' · 商业 '+f(d0.commercialTotal)+'</div></div>'+
+    '<div class="summary-card orange"><div class="s-label">当日借还书</div><div class="s-value">'+f((d0.borrowDaily||0)+(d0.returnDaily||0))+'</div><div class="s-sub">借 '+f(d0.borrowDaily)+' · 还 '+f(d0.returnDaily)+'</div></div>'+
+    '<div class="summary-card purple"><div class="s-label">累计总客流</div><div class="s-value">'+f(d0.cumulativeTotal)+'</div><div class="s-sub">2026年累计 '+f(d0.ytdTotal)+'</div></div>'+
+    '<div class="summary-card"><div class="s-label">显示记录</div><div class="s-value">'+cur.length+'</div><div class="s-sub">期间客流 '+f(tg)+'</div></div>'+
+    '<div class="summary-card green"><div class="s-label">期间办证</div><div class="s-value">'+f(tc)+'</div><div class="s-sub">借 '+f(tb2)+' · 还 '+f(tr2)+'</div></div>';
+  // ---- 区间累计汇总（按所选日期范围累加） ----
+  var rd=cur.slice().sort(function(a,b){return a.date.localeCompare(b.date)});
+  if(rd.length){
+    var days=rd.length,rs1=0,rs2=0,rs3=0,rs4=0,rs5=0,rs6=0,rs7=0;
+    for(var k=0;k<rd.length;k++){var x=rd[k];rs1+=x.dailyGrandTotal||0;rs2+=x.visitorTotal||0;rs3+=x.commercialTotal||0;rs4+=x.cardDaily||0;rs5+=x.borrowDaily||0;rs6+=x.returnDaily||0;rs7+=x.newFans||0}
+    var r0=rd[0],r1=rd[rd.length-1];
+    $('rRange').textContent=r0.date+' ~ '+r1.date+'（'+days+'天）';
+    $('rangeGrid').innerHTML=
+      '<div class="summary-card"><div class="s-label">区间天数</div><div class="s-value">'+days+'</div><div class="s-sub">'+r0.date+' ~ '+r1.date+'</div></div>'+
+      '<div class="summary-card green"><div class="s-label">总客流合计</div><div class="s-value">'+f(rs1)+'</div><div class="s-sub">日均 '+f(Math.round(rs1/days))+'</div></div>'+
+      '<div class="summary-card"><div class="s-label">进馆客流合计</div><div class="s-value">'+f(rs2)+'</div><div class="s-sub">日均 '+f(Math.round(rs2/days))+'</div></div>'+
+      '<div class="summary-card orange"><div class="s-label">商业客流合计</div><div class="s-value">'+f(rs3)+'</div><div class="s-sub">日均 '+f(Math.round(rs3/days))+'</div></div>'+
+      '<div class="summary-card"><div class="s-label">办证合计</div><div class="s-value">'+f(rs4)+'</div><div class="s-sub">日均 '+f(Math.round(rs4/days))+'</div></div>'+
+      '<div class="summary-card purple"><div class="s-label">借书合计</div><div class="s-value">'+f(rs5)+'</div><div class="s-sub">日均 '+f(Math.round(rs5/days))+'</div></div>'+
+      '<div class="summary-card"><div class="s-label">还书合计</div><div class="s-value">'+f(rs6)+'</div><div class="s-sub">日均 '+f(Math.round(rs6/days))+'</div></div>'+
+      '<div class="summary-card orange"><div class="s-label">新增粉丝合计</div><div class="s-value">'+f(rs7)+'</div><div class="s-sub">区间内累计</div></div>'+
+      '<div class="summary-card purple"><div class="s-label">期末累计客流</div><div class="s-value">'+f(r1.cumulativeTotal)+'</div><div class="s-sub">2026年累计 '+f(r1.ytdTotal)+'</div></div>'+
+      '<div class="summary-card green"><div class="s-label">期末累计借书</div><div class="s-value">'+f(r1.borrowCumulative)+'</div><div class="s-sub">累计还书 '+f(r1.returnCumulative)+'</div></div>';
+  }
+  for(var j=0;j<cur.length;j++){
+    (function(d){
+      var wk=wd(d.date),closed=(wk==='周一'?'<span class="closed">闭馆</span>':'');
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td style="font-weight:600">'+d.date+'</td><td>'+wk+closed+'</td><td>'+(d.dayNumber||'—')+'</td><td class="num">'+f(d.dailyGrandTotal)+'</td><td class="num">'+f(d.visitorTotal)+'</td><td class="num">'+f(d.commercialTotal)+'</td><td class="num">'+f(d.cardDaily)+'</td><td class="num">'+f(d.borrowDaily)+'</td><td class="num">'+f(d.returnDaily)+'</td><td class="num">'+f(d.borrowCumulative)+'</td><td class="num">'+f(d.returnCumulative)+'</td><td class="num">'+f(d.ytdTotal)+'</td><td class="num">'+f(d.cumulativeTotal)+'</td>';
+      tr.onclick=function(){showDetail(d)};
+      tb.appendChild(tr);
+      var mc=document.createElement('div');
+      mc.className='mcard';
+      mc.innerHTML='<div class="top"><div><span class="date">'+d.date+'</span><span class="wk">'+wk+'</span>'+closed+'</div><div style="font-size:11px;color:var(--text3)">第'+(d.dayNumber||'?')+'天</div></div>'+
+        '<div class="grids">'+
+        '<div class="g"><b>'+f(d.dailyGrandTotal)+'</b><span>总客流</span></div>'+
+        '<div class="g"><b>'+f(d.visitorTotal)+'</b><span>进馆</span></div>'+
+        '<div class="g"><b>'+f(d.commercialTotal)+'</b><span>商业</span></div>'+
+        '<div class="g"><b>'+f(d.cardDaily)+'</b><span>办证</span></div>'+
+        '<div class="g"><b>'+f(d.borrowDaily)+'</b><span>借书</span></div>'+
+        '<div class="g"><b>'+f(d.returnDaily)+'</b><span>还书</span></div>'+
+        '</div><div class="more">点击查看全部字段与当日播报 ›</div>';
+      mc.onclick=function(){showDetail(d)};
+      ml.appendChild(mc);
+    })(cur[j]);
+  }
+}
+$('fStart').addEventListener('change',render);
+$('fEnd').addEventListener('change',render);
+$('fSearch').addEventListener('input',render);
+render();
+</script>
+</body>
+</html>
