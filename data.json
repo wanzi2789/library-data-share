@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-27T01:13:21.612Z",
+  "updated": "2026-08-27T01:35:29.610Z",
   "data": [
     {
       "date": "2026-01-01",
@@ -7598,7 +7598,7 @@
       "cumulativeTotal": 4066629,
       "ytdTotal": 2006619,
       "cardDaily": 557,
-      "cardCumulative": 400787,
+      "cardCumulative": 400786,
       "borrowDaily": 3668,
       "borrowCumulative": 1853123,
       "returnDaily": 3962,
@@ -7613,6 +7613,5 @@
       "newFans": 607,
       "newViews": 8890
     }
-  ],
-  "shareTrigger": "2026-08-27T01:13:21.612Z"
+  ]
 }
